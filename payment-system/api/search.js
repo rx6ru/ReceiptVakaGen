@@ -1,6 +1,5 @@
 // api/search.js
 const { createClient } = require('@supabase/supabase-js');
-const express = require('express');
 const jwt = require('jsonwebtoken');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
