@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
-  console.error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
+    console.error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
@@ -38,4 +38,4 @@ module.exports = async (req, res) => {
         }
         return res.status(403).json({ message: 'Access Denied: Invalid token.' });
     }
-};
+}

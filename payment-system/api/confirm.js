@@ -1,3 +1,4 @@
+
 // api/confirm.js
 const { createClient } = require('@supabase/supabase-js');
 const nodemailer = require('nodemailer');
@@ -10,25 +11,31 @@ const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const JWT_SECRET = process.env.JWT_SECRET;
 
+// Check environment variables
 if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !GMAIL_USER || !GMAIL_APP_PASSWORD || !JWT_SECRET) {
     console.error('FATAL ERROR: One or more environment variables are not defined.');
+    // Don't exit process in serverless - let it handle the error gracefully
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-const transporter = nodemailer.createTransporter({
-    service: 'gmail',
-    auth: {
-        user: GMAIL_USER,
-        pass: GMAIL_APP_PASSWORD,
-    },
-});
+// Initialize transporter only if credentials are available
+let transporter;
+if (GMAIL_USER && GMAIL_APP_PASSWORD) {
+    transporter = nodemailer.createTransporter({
+        service: 'gmail',
+        auth: {
+            user: GMAIL_USER,
+            pass: GMAIL_APP_PASSWORD,
+        },
+    });
+}
 
 function generatePaymentId() {
     return crypto.randomBytes(5).toString('hex').toUpperCase();
 }
 
-// Token verification function (inline)
+// Token verification function
 function verifyToken(req) {
     const authHeader = req.headers['authorization'];
     
@@ -53,7 +60,8 @@ function verifyToken(req) {
     }
 }
 
-module.exports = async (req, res) => {
+// Default export for Vercel
+export default async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -68,6 +76,11 @@ module.exports = async (req, res) => {
     }
 
     try {
+        // Check if required services are available
+        if (!transporter) {
+            return res.status(500).json({ message: 'Email service not configured' });
+        }
+
         // Verify token
         const user = verifyToken(req);
         const confirmedByAdminName = user.adminName;
@@ -116,18 +129,19 @@ module.exports = async (req, res) => {
         if (petitionerData.petitioner_group === 3) {
             paymentAmountDisplay = '₹1050';
             paymentDescription = 'for third phase collection';
-            petitionerCaseNumber = 'WPA26400/2024'
+            petitionerCaseNumber = 'WPA26400/2024';
         } else if (petitionerData.petitioner_group === 2) {
             paymentAmountDisplay = '₹1950';
             paymentDescription = 'for fourth phase collection';
-            petitionerCaseNumber = 'WPA13054/2024'
+            petitionerCaseNumber = 'WPA13054/2024';
         } else if (petitionerData.petitioner_group === 1) {
             paymentAmountDisplay = '₹1950';
             paymentDescription = 'for fourth phase collection';
-            petitionerCaseNumber = 'WPA3028/2024'
+            petitionerCaseNumber = 'WPA3028/2024';
         } else {
             paymentAmountDisplay = 'Amount not specified';
             paymentDescription = 'for registration';
+            petitionerCaseNumber = 'Case not specified';
             console.warn(`Petitioner ${petitionerData.id} has unhandled group: ${petitionerData.petitioner_group}.`);
         }
 
@@ -191,4 +205,4 @@ module.exports = async (req, res) => {
         console.error('Confirmation process error:', error);
         res.status(500).json({ message: 'An unexpected error occurred during confirmation.' });
     }
-};
+}
