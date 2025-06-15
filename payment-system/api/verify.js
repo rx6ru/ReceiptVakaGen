@@ -6,33 +6,6 @@ if (!JWT_SECRET) {
   console.error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
 }
 
-// Utility function for token verification (used by other APIs)
-function verifyToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'Access Denied: No token provided or token format is incorrect.' });
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ message: 'Access Denied: Token missing after Bearer.' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        if (err.name === 'TokenExpiredError') {
-            return res.status(403).json({ message: 'Access Denied: Token expired.' });
-        }
-        return res.status(403).json({ message: 'Access Denied: Invalid token.' });
-    }
-}
-
-// Serverless function export (for direct API calls if needed)
 module.exports = async (req, res) => {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -66,6 +39,3 @@ module.exports = async (req, res) => {
         return res.status(403).json({ message: 'Access Denied: Invalid token.' });
     }
 };
-
-// Also export the middleware function for backward compatibility
-module.exports.verifyToken = verifyToken;
