@@ -1,4 +1,4 @@
-// api/confirm.js - Fixed for Vercel serverless
+// api/confirm.js - Enhanced with better error handling and logging
 const { createClient } = require('@supabase/supabase-js');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
@@ -10,32 +10,52 @@ const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Check environment variables
-if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !GMAIL_USER || !GMAIL_APP_PASSWORD || !JWT_SECRET) {
-    console.error('FATAL ERROR: One or more environment variables are not defined.');
+// Enhanced environment variable checking
+function checkEnvironmentVariables() {
+    const missing = [];
+    if (!SUPABASE_URL) missing.push('SUPABASE_URL');
+    if (!SUPABASE_SERVICE_KEY) missing.push('SUPABASE_SERVICE_KEY');
+    if (!GMAIL_USER) missing.push('GMAIL_USER');
+    if (!GMAIL_APP_PASSWORD) missing.push('GMAIL_APP_PASSWORD');
+    if (!JWT_SECRET) missing.push('JWT_SECRET');
+    
+    if (missing.length > 0) {
+        console.error('FATAL ERROR: Missing environment variables:', missing.join(', '));
+        return false;
+    }
+    return true;
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const envCheck = checkEnvironmentVariables();
+let supabase, transporter;
 
-// Initialize transporter only if credentials are available
-let transporter;
-if (GMAIL_USER && GMAIL_APP_PASSWORD) {
-    transporter = nodemailer.createTransporter({
-        service: 'gmail',
-        auth: {
-            user: GMAIL_USER,
-            pass: GMAIL_APP_PASSWORD,
-        },
-    });
+if (envCheck) {
+    supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    
+    // Initialize transporter
+    try {
+        transporter = nodemailer.createTransporter({
+            service: 'gmail',
+            auth: {
+                user: GMAIL_USER,
+                pass: GMAIL_APP_PASSWORD,
+            },
+        });
+        console.log('Email transporter initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize email transporter:', error);
+    }
 }
 
 function generatePaymentId() {
     return crypto.randomBytes(5).toString('hex').toUpperCase();
 }
 
-// Token verification function
+// Enhanced token verification function
 function verifyToken(req) {
     const authHeader = req.headers['authorization'];
+    
+    console.log('Auth header received:', authHeader ? 'Present' : 'Missing');
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         throw new Error('Access Denied: No token provided or token format is incorrect.');
@@ -47,12 +67,19 @@ function verifyToken(req) {
         throw new Error('Access Denied: Token missing after Bearer.');
     }
     
+    console.log('Token length:', token.length);
+    
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
+        console.log('Token verified successfully for admin:', decoded.adminName);
         return decoded;
     } catch (err) {
+        console.error('Token verification error:', err.message);
         if (err.name === 'TokenExpiredError') {
             throw new Error('Access Denied: Token expired.');
+        }
+        if (err.name === 'JsonWebTokenError') {
+            throw new Error('Access Denied: Invalid token format.');
         }
         throw new Error('Access Denied: Invalid token.');
     }
@@ -60,17 +87,27 @@ function verifyToken(req) {
 
 // Export as serverless function handler
 module.exports = async (req, res) => {
+    console.log(`[${new Date().toISOString()}] Confirm API called with method: ${req.method}`);
+    
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     
     if (req.method === 'OPTIONS') {
+        console.log('Handling CORS preflight request');
         return res.status(200).end();
     }
     
     if (req.method !== 'POST') {
+        console.log('Method not allowed:', req.method);
         return res.status(405).json({ message: 'Method not allowed' });
+    }
+
+    // Check environment setup first
+    if (!envCheck) {
+        console.error('Environment variables not properly configured');
+        return res.status(500).json({ message: 'Server configuration error' });
     }
 
     try {
@@ -78,6 +115,11 @@ module.exports = async (req, res) => {
         if (!transporter) {
             console.error('Email service not configured - missing GMAIL credentials');
             return res.status(500).json({ message: 'Email service not configured' });
+        }
+
+        if (!supabase) {
+            console.error('Database connection not configured');
+            return res.status(500).json({ message: 'Database service not configured' });
         }
 
         // Verify token
@@ -92,7 +134,11 @@ module.exports = async (req, res) => {
         const confirmedByAdminName = user.adminName;
         const { petitionerId } = req.body;
 
+        console.log('Request body:', req.body);
+        console.log('Petitioner ID:', petitionerId);
+
         if (!petitionerId) {
+            console.error('Petitioner ID missing from request');
             return res.status(400).json({ message: 'Petitioner ID is required.' });
         }
 
@@ -100,6 +146,8 @@ module.exports = async (req, res) => {
 
         const newPaymentId = generatePaymentId();
         const confirmedAt = new Date().toISOString();
+
+        console.log('Generated payment ID:', newPaymentId);
 
         // Update the petitioner record
         const { data, error } = await supabase
@@ -120,10 +168,11 @@ module.exports = async (req, res) => {
             if (error.code === 'PGRST116') {
                 return res.status(409).json({ message: 'Payment already confirmed or petitioner not found.' });
             }
-            return res.status(500).json({ message: 'Error confirming payment in database.' });
+            return res.status(500).json({ message: 'Error confirming payment in database.', details: error.message });
         }
 
         if (!data) {
+            console.log('No data returned from update - payment already confirmed or petitioner not found');
             return res.status(409).json({ message: 'Payment already confirmed or petitioner not found.' });
         }
 
@@ -191,6 +240,7 @@ module.exports = async (req, res) => {
 
         // Send email
         try {
+            console.log('Attempting to send email to:', petitionerData.email);
             await transporter.sendMail(mailOptions);
             console.log(`Confirmation email sent to ${petitionerData.email}`);
         } catch (emailError) {
@@ -200,7 +250,7 @@ module.exports = async (req, res) => {
         }
 
         // Return success response
-        res.status(200).json({
+        const successResponse = {
             message: `Payment confirmed and email sent successfully. Amount: ${paymentAmountDisplay}.`,
             petitioner: {
                 id: petitionerData.id,
@@ -214,10 +264,14 @@ module.exports = async (req, res) => {
                 confirmed_by: petitionerData.confirmed_by,
                 confirmed_at: petitionerData.confirmed_at
             }
-        });
+        };
+
+        console.log('Sending success response');
+        res.status(200).json(successResponse);
 
     } catch (error) {
         console.error('Confirmation process error:', error);
+        console.error('Error stack:', error.stack);
         
         if (error.message.includes('Access Denied')) {
             return res.status(401).json({ message: error.message });
@@ -225,7 +279,7 @@ module.exports = async (req, res) => {
         
         res.status(500).json({ 
             message: 'An unexpected error occurred during confirmation.',
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 };

@@ -357,3 +357,41 @@ if (window.location.pathname === '/dashboard.html') {
     // 1. Modify `performSearch` to handle an empty `query` by fetching all pending records.
     // 2. Call `performSearch()` here without an argument or with an empty string.
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Add this to your dashboard script temporarily for testing
+async function testConfirmEndpoint() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/confirm`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}`,
+            },
+            body: JSON.stringify({ petitionerId: 'test' }),
+        });
+        console.log('Test response status:', response.status);
+        const data = await response.json();
+        console.log('Test response data:', data);
+    } catch (error) {
+        console.error('Test failed:', error);
+    }
+}
+// Call this in browser console: testConfirmEndpoint()

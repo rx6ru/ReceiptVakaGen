@@ -13,27 +13,43 @@
   "routes": [
     {
       "src": "/api/login",
-      "dest": "/api/login.js"
+      "dest": "/api/login.js",
+      "methods": ["POST", "OPTIONS"]
     },
     {
       "src": "/api/verify",
-      "dest": "/api/verify.js"
+      "dest": "/api/verify.js",
+      "methods": ["POST", "GET", "OPTIONS"]
     },
     {
       "src": "/api/search",
-      "dest": "/api/search.js"
+      "dest": "/api/search.js",
+      "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/confirm",
-      "dest": "/api/confirm.js"
+      "dest": "/api/confirm.js",
+      "methods": ["POST", "OPTIONS"]
     },
     {
-      "src": "/(.*)",
-      "dest": "/public/$1"
+      "src": "/dashboard.html",
+      "dest": "/public/dashboard.html"
+    },
+    {
+      "src": "/styles.css",
+      "dest": "/public/styles.css"
+    },
+    {
+      "src": "/script.js",
+      "dest": "/public/script.js"
     },
     {
       "src": "/",
       "dest": "/public/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
     }
   ]
 }
