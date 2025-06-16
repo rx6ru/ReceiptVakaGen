@@ -1,4 +1,4 @@
-// api/confirm.js - Enhanced with better error handling and logging
+// api/confirm.js - Enhanced debugging version
 const { createClient } = require('@supabase/supabase-js');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
@@ -10,14 +10,57 @@ const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Enhanced environment variable checking
+// Enhanced environment variable checking with detailed logging
 function checkEnvironmentVariables() {
     const missing = [];
-    if (!SUPABASE_URL) missing.push('SUPABASE_URL');
-    if (!SUPABASE_SERVICE_KEY) missing.push('SUPABASE_SERVICE_KEY');
-    if (!GMAIL_USER) missing.push('GMAIL_USER');
-    if (!GMAIL_APP_PASSWORD) missing.push('GMAIL_APP_PASSWORD');
-    if (!JWT_SECRET) missing.push('JWT_SECRET');
+    const present = [];
+    
+    // Check each variable and log its status
+    console.log('=== ENVIRONMENT VARIABLES CHECK ===');
+    
+    if (!SUPABASE_URL) {
+        missing.push('SUPABASE_URL');
+        console.log('❌ SUPABASE_URL: Missing');
+    } else {
+        present.push('SUPABASE_URL');
+        console.log('✅ SUPABASE_URL: Present');
+    }
+    
+    if (!SUPABASE_SERVICE_KEY) {
+        missing.push('SUPABASE_SERVICE_KEY');
+        console.log('❌ SUPABASE_SERVICE_KEY: Missing');
+    } else {
+        present.push('SUPABASE_SERVICE_KEY');
+        console.log('✅ SUPABASE_SERVICE_KEY: Present');
+    }
+    
+    if (!GMAIL_USER) {
+        missing.push('GMAIL_USER');
+        console.log('❌ GMAIL_USER: Missing');
+    } else {
+        present.push('GMAIL_USER');
+        console.log(`✅ GMAIL_USER: Present (${GMAIL_USER})`);
+    }
+    
+    if (!GMAIL_APP_PASSWORD) {
+        missing.push('GMAIL_APP_PASSWORD');
+        console.log('❌ GMAIL_APP_PASSWORD: Missing');
+    } else {
+        present.push('GMAIL_APP_PASSWORD');
+        console.log(`✅ GMAIL_APP_PASSWORD: Present (length: ${GMAIL_APP_PASSWORD.length})`);
+    }
+    
+    if (!JWT_SECRET) {
+        missing.push('JWT_SECRET');
+        console.log('❌ JWT_SECRET: Missing');
+    } else {
+        present.push('JWT_SECRET');
+        console.log('✅ JWT_SECRET: Present');
+    }
+    
+    console.log(`Present variables: ${present.length}/5`);
+    console.log(`Missing variables: ${missing.length}/5`);
+    console.log('=== END ENV CHECK ===');
     
     if (missing.length > 0) {
         console.error('FATAL ERROR: Missing environment variables:', missing.join(', '));
@@ -30,10 +73,18 @@ const envCheck = checkEnvironmentVariables();
 let supabase, transporter;
 
 if (envCheck) {
+    console.log('Initializing Supabase client...');
     supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    console.log('✅ Supabase client initialized');
     
-    // Initialize transporter
+    // Enhanced transporter initialization with detailed error logging
+    console.log('Initializing email transporter...');
     try {
+        // Test the Gmail credentials format
+        if (!GMAIL_USER.includes('@gmail.com')) {
+            console.warn('⚠️  GMAIL_USER might not be a valid Gmail address:', GMAIL_USER);
+        }
+        
         transporter = nodemailer.createTransporter({
             service: 'gmail',
             auth: {
@@ -41,10 +92,36 @@ if (envCheck) {
                 pass: GMAIL_APP_PASSWORD,
             },
         });
-        console.log('Email transporter initialized successfully');
+        
+        console.log('✅ Email transporter created successfully');
+        
+        // Test the transporter connection
+        console.log('Testing email transporter connection...');
+        transporter.verify((error, success) => {
+            if (error) {
+                console.error('❌ Email transporter verification failed:', error);
+                console.error('Error details:', {
+                    code: error.code,
+                    response: error.response,
+                    responseCode: error.responseCode,
+                    command: error.command
+                });
+            } else {
+                console.log('✅ Email transporter verified successfully');
+            }
+        });
+        
     } catch (error) {
-        console.error('Failed to initialize email transporter:', error);
+        console.error('❌ Failed to initialize email transporter:', error);
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+        transporter = null; // Ensure it's null if initialization fails
     }
+} else {
+    console.error('❌ Environment check failed - services not initialized');
 }
 
 function generatePaymentId() {
@@ -104,23 +181,41 @@ module.exports = async (req, res) => {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    // Check environment setup first
+    // Enhanced environment setup check
+    console.log('=== SERVICE AVAILABILITY CHECK ===');
     if (!envCheck) {
-        console.error('Environment variables not properly configured');
-        return res.status(500).json({ message: 'Server configuration error' });
+        console.error('❌ Environment variables not properly configured');
+        return res.status(500).json({ 
+            message: 'Server configuration error - missing environment variables',
+            debug: 'Check server logs for missing environment variables'
+        });
     }
 
     try {
-        // Check if required services are available
+        // Enhanced service availability checks
+        console.log('Checking email service availability...');
         if (!transporter) {
-            console.error('Email service not configured - missing GMAIL credentials');
-            return res.status(500).json({ message: 'Email service not configured' });
+            console.error('❌ Email service not configured - transporter is null');
+            console.error('This usually means:');
+            console.error('1. GMAIL_USER or GMAIL_APP_PASSWORD environment variables are missing');
+            console.error('2. Gmail credentials are invalid');
+            console.error('3. Transporter initialization failed');
+            return res.status(500).json({ 
+                message: 'Email service not configured',
+                debug: 'Gmail credentials missing or invalid'
+            });
         }
+        console.log('✅ Email service available');
 
+        console.log('Checking database service availability...');
         if (!supabase) {
-            console.error('Database connection not configured');
-            return res.status(500).json({ message: 'Database service not configured' });
+            console.error('❌ Database connection not configured');
+            return res.status(500).json({ 
+                message: 'Database service not configured',
+                debug: 'Supabase credentials missing or invalid'
+            });
         }
+        console.log('✅ Database service available');
 
         // Verify token
         let user;
@@ -238,15 +333,32 @@ module.exports = async (req, res) => {
             `,
         };
 
-        // Send email
+        // Enhanced email sending with detailed error logging
         try {
             console.log('Attempting to send email to:', petitionerData.email);
-            await transporter.sendMail(mailOptions);
-            console.log(`Confirmation email sent to ${petitionerData.email}`);
+            console.log('Email options:', {
+                from: mailOptions.from,
+                to: mailOptions.to,
+                subject: mailOptions.subject
+            });
+            
+            const emailResult = await transporter.sendMail(mailOptions);
+            console.log(`✅ Confirmation email sent successfully to ${petitionerData.email}`);
+            console.log('Email result:', emailResult);
         } catch (emailError) {
-            console.error('Email sending failed:', emailError);
+            console.error('❌ Email sending failed:', emailError);
+            console.error('Email error details:', {
+                name: emailError.name,
+                message: emailError.message,
+                code: emailError.code,
+                response: emailError.response,
+                responseCode: emailError.responseCode,
+                command: emailError.command
+            });
+            
             // Don't fail the entire request if email fails, but log it
             // The payment is already confirmed in the database
+            console.log('⚠️  Payment confirmed in database but email failed to send');
         }
 
         // Return success response
