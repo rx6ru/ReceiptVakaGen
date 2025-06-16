@@ -1,7 +1,7 @@
+// api/index.js - Fixed version
 const express = require('express');
-const path = require('path');
 
-// Import route handlers
+// Import route handlers (now all CommonJS)
 const loginHandler = require('./login');
 const verifyHandler = require('./verify');
 const searchHandler = require('./search');
@@ -26,11 +26,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Routes
+// API Routes - using the handlers as middleware
 app.use('/api/login', loginHandler);
-app.use('/api/verify', verifyHandler);
-app.use('/api/search', searchHandler);
-app.use('/api/confirm', confirmHandler);
+app.post('/api/verify', verifyHandler);  // verify as POST endpoint
+app.get('/api/search', searchHandler);   // search as GET endpoint  
+app.post('/api/confirm', confirmHandler); // confirm as POST endpoint
 
 // 404 handler for API routes
 app.use('/api/*', (req, res) => {

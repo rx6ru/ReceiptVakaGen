@@ -1,3 +1,4 @@
+// api/verify.js - Fixed CommonJS version
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -6,7 +7,8 @@ if (!JWT_SECRET) {
     console.error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
 }
 
-export default async function handler(req, res) {
+// Export as CommonJS module for Express routing
+module.exports = async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
@@ -38,4 +40,4 @@ export default async function handler(req, res) {
         }
         return res.status(403).json({ message: 'Access Denied: Invalid token.' });
     }
-}
+};

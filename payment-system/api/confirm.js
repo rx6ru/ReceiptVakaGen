@@ -1,8 +1,8 @@
-// api/confirm.js - ES Modules version
-import { createClient } from '@supabase/supabase-js';
-import nodemailer from 'nodemailer';
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
+// api/confirm.js - Fixed CommonJS version
+const { createClient } = require('@supabase/supabase-js');
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -58,8 +58,8 @@ function verifyToken(req) {
     }
 }
 
-// Default export for Vercel
-export default async function handler(req, res) {
+// Export as CommonJS module for Express routing
+module.exports = async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -203,4 +203,4 @@ export default async function handler(req, res) {
         console.error('Confirmation process error:', error);
         res.status(500).json({ message: 'An unexpected error occurred during confirmation.' });
     }
-}
+};

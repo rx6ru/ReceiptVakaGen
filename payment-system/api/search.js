@@ -1,4 +1,4 @@
-// api/search.js
+// api/search.js - Fixed CommonJS version
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 
@@ -12,7 +12,7 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !JWT_SECRET) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-// Token verification function (inline)
+// Token verification function
 function verifyToken(req) {
     const authHeader = req.headers['authorization'];
     
@@ -37,8 +37,8 @@ function verifyToken(req) {
     }
 }
 
-// Export as default for Vercel
-export default async function handler(req, res) {
+// Export as CommonJS module for Express routing
+module.exports = async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -97,4 +97,4 @@ export default async function handler(req, res) {
         console.error('An unexpected error occurred during search:', error);
         res.status(500).json({ message: 'An unexpected server error occurred.' });
     }
-}
+};
