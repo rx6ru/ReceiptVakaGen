@@ -1,9 +1,8 @@
-
-// api/confirm.js
-const { createClient } = require('@supabase/supabase-js');
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+// api/confirm.js - ES Modules version
+import { createClient } from '@supabase/supabase-js';
+import nodemailer from 'nodemailer';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -14,7 +13,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // Check environment variables
 if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !GMAIL_USER || !GMAIL_APP_PASSWORD || !JWT_SECRET) {
     console.error('FATAL ERROR: One or more environment variables are not defined.');
-    // Don't exit process in serverless - let it handle the error gracefully
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);

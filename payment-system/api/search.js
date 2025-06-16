@@ -37,7 +37,8 @@ function verifyToken(req) {
     }
 }
 
-module.exports = async (req, res) => {
+// Export as default for Vercel
+export default async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -96,4 +97,4 @@ module.exports = async (req, res) => {
         console.error('An unexpected error occurred during search:', error);
         res.status(500).json({ message: 'An unexpected server error occurred.' });
     }
-};
+}

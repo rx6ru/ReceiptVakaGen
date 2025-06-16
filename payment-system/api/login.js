@@ -12,8 +12,8 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !JWT_SECRET) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-// Export the handler function directly
-module.exports = async (req, res) => {
+// Export as default for Vercel
+export default async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -66,4 +66,4 @@ module.exports = async (req, res) => {
         console.error('Login error:', error);
         res.status(500).json({ message: 'An unexpected error occurred during login.' });
     }
-};
+}
