@@ -1,7 +1,6 @@
+// api/login.js - Fixed for Vercel serverless
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
-const express = require('express');
-const router = express.Router();
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -13,8 +12,21 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !JWT_SECRET) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-// Handle POST requests
-router.post('/', async (req, res) => {
+// Export as serverless function handler
+module.exports = async (req, res) => {
+  // Add CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
   const { adminCode } = req.body;
 
   if (!adminCode) {
@@ -53,7 +65,4 @@ router.post('/', async (req, res) => {
     console.error('Login error:', error);
     res.status(500).json({ message: 'An unexpected error occurred during login.' });
   }
-});
-
-// Export for Express
-module.exports = router;
+};
