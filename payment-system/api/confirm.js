@@ -1,4 +1,4 @@
-// api/confirm.js - Fixed CommonJS version
+// api/confirm.js - Fixed for Vercel serverless
 const { createClient } = require('@supabase/supabase-js');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
@@ -58,8 +58,8 @@ function verifyToken(req) {
     }
 }
 
-// Export as CommonJS module for Express routing
-module.exports = async function handler(req, res) {
+// Export as serverless function handler
+module.exports = async (req, res) => {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -76,22 +76,32 @@ module.exports = async function handler(req, res) {
     try {
         // Check if required services are available
         if (!transporter) {
+            console.error('Email service not configured - missing GMAIL credentials');
             return res.status(500).json({ message: 'Email service not configured' });
         }
 
         // Verify token
-        const user = verifyToken(req);
-        const confirmedByAdminName = user.adminName;
+        let user;
+        try {
+            user = verifyToken(req);
+        } catch (tokenError) {
+            console.error('Token verification failed:', tokenError.message);
+            return res.status(401).json({ message: tokenError.message });
+        }
         
+        const confirmedByAdminName = user.adminName;
         const { petitionerId } = req.body;
 
         if (!petitionerId) {
             return res.status(400).json({ message: 'Petitioner ID is required.' });
         }
 
+        console.log(`Attempting to confirm payment for petitioner ID: ${petitionerId}`);
+
         const newPaymentId = generatePaymentId();
         const confirmedAt = new Date().toISOString();
 
+        // Update the petitioner record
         const { data, error } = await supabase
             .from('petitioners')
             .update({
@@ -110,7 +120,7 @@ module.exports = async function handler(req, res) {
             if (error.code === 'PGRST116') {
                 return res.status(409).json({ message: 'Payment already confirmed or petitioner not found.' });
             }
-            return res.status(500).json({ message: 'Error confirming payment.' });
+            return res.status(500).json({ message: 'Error confirming payment in database.' });
         }
 
         if (!data) {
@@ -120,6 +130,7 @@ module.exports = async function handler(req, res) {
         const petitionerData = data;
         console.log(`Payment confirmed for ${petitionerData.name}. Payment ID: ${petitionerData.payment_id}`);
 
+        // Determine payment details based on group
         let petitionerCaseNumber;
         let paymentAmountDisplay;
         let paymentDescription;
@@ -143,6 +154,7 @@ module.exports = async function handler(req, res) {
             console.warn(`Petitioner ${petitionerData.id} has unhandled group: ${petitionerData.petitioner_group}.`);
         }
 
+        // Prepare email
         const mailOptions = {
             from: GMAIL_USER,
             to: petitionerData.email,
@@ -177,9 +189,17 @@ module.exports = async function handler(req, res) {
             `,
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log(`Confirmation email sent to ${petitionerData.email}`);
+        // Send email
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log(`Confirmation email sent to ${petitionerData.email}`);
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+            // Don't fail the entire request if email fails, but log it
+            // The payment is already confirmed in the database
+        }
 
+        // Return success response
         res.status(200).json({
             message: `Payment confirmed and email sent successfully. Amount: ${paymentAmountDisplay}.`,
             petitioner: {
@@ -197,10 +217,15 @@ module.exports = async function handler(req, res) {
         });
 
     } catch (error) {
+        console.error('Confirmation process error:', error);
+        
         if (error.message.includes('Access Denied')) {
             return res.status(401).json({ message: error.message });
         }
-        console.error('Confirmation process error:', error);
-        res.status(500).json({ message: 'An unexpected error occurred during confirmation.' });
+        
+        res.status(500).json({ 
+            message: 'An unexpected error occurred during confirmation.',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };

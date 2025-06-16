@@ -1,4 +1,4 @@
-// api/verify.js - Fixed CommonJS version
+// api/verify.js - Fixed for Vercel serverless
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -7,8 +7,8 @@ if (!JWT_SECRET) {
     console.error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
 }
 
-// Export as CommonJS module for Express routing
-module.exports = async function handler(req, res) {
+// Export as serverless function handler
+module.exports = async (req, res) => {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
@@ -35,6 +35,8 @@ module.exports = async function handler(req, res) {
         res.status(200).json({ valid: true, user: decoded });
         
     } catch (err) {
+        console.error('Token verification error:', err);
+        
         if (err.name === 'TokenExpiredError') {
             return res.status(403).json({ message: 'Access Denied: Token expired.' });
         }

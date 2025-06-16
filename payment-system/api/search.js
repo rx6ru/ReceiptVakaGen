@@ -1,4 +1,4 @@
-// api/search.js - Fixed CommonJS version
+// api/search.js - Fixed for Vercel serverless
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 
@@ -37,8 +37,8 @@ function verifyToken(req) {
     }
 }
 
-// Export as CommonJS module for Express routing
-module.exports = async function handler(req, res) {
+// Export as serverless function handler
+module.exports = async (req, res) => {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -55,13 +55,14 @@ module.exports = async function handler(req, res) {
     try {
         // Verify token
         const user = verifyToken(req);
-        req.user = user;
         
         const searchQuery = req.query.q;
 
         if (!searchQuery) {
             return res.status(400).json({ message: 'Search query (q) is required.' });
         }
+
+        console.log(`Search query: ${searchQuery}`);
 
         let queryBuilder = supabase
             .from('petitioners')
@@ -88,13 +89,19 @@ module.exports = async function handler(req, res) {
             return res.status(200).json([]);
         }
 
+        console.log(`Found ${data.length} results for query: ${searchQuery}`);
         res.status(200).json(data);
 
     } catch (error) {
+        console.error('Search error:', error);
+        
         if (error.message.includes('Access Denied')) {
             return res.status(401).json({ message: error.message });
         }
-        console.error('An unexpected error occurred during search:', error);
-        res.status(500).json({ message: 'An unexpected server error occurred.' });
+        
+        res.status(500).json({ 
+            message: 'An unexpected server error occurred.',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
