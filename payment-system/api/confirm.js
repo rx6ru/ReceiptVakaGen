@@ -85,7 +85,7 @@ if (envCheck) {
             console.warn('⚠️  GMAIL_USER might not be a valid Gmail address:', GMAIL_USER);
         }
         
-        transporter = nodemailer.createTransporter({
+        transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: GMAIL_USER,
