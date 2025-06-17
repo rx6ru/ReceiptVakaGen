@@ -1,25 +1,61 @@
 /* Basic Reset & Global Styles */
 :root {
-    /* New Black & Gold Color Palette for a classy, premium look */
-    --bg-primary: #121212; /* Deep Black for overall page background */
-    --bg-card: #1f1f1f;    /* Slightly lighter Black for containers (cards) */
-    --primary-accent: #d4af37; /* Classic Gold for main actions */
-    --primary-accent-hover: #b8860b; /* Darker Gold/Goldenrod for hover states */
-    --secondary-accent: #9b870c; /* Muted Gold/Bronze for logout, cancel, danger messages */
-    --secondary-accent-hover: #7a6a09; /* Even darker muted gold on hover */
-    --text-light: #e0e0e0; /* Off-white/light grey for general text */
-    --text-heading: #ffd700; /* Brighter Gold for headings */
-    --border-subtle: #3a3a3a; /* Dark grey subtle border */
-    --shadow-deep: 0 10px 25px rgba(0, 0, 0, 0.7); /* Deeper, more pronounced shadow */
-    --confirmed-bg: #2a2a2a; /* Darker background for confirmed rows */
-    --disabled-btn-bg: #404040; /* Mid-grey for disabled buttons */
-    --table-header-bg: #181818; /* Very dark grey/black for table headers */
-    --table-stripe: #252525; /* Subtle stripe for table rows */
-
-    /* Glaze Effect Variables (subtle gradients/shadows) */
-    --glaze-gradient-gold: linear-gradient(145deg, rgba(212, 175, 55, 0.9), rgba(184, 134, 11, 0.8));
-    --glaze-shadow-gold: 0 0 15px rgba(255, 215, 0, 0.4);
-    --glaze-border-gold: 1px solid rgba(212, 175, 55, 0.6);
+    /* Premium Black & Gold Color Palette - Luxury Edition */
+    --bg-primary: #0a0a0a; /* Rich, deep black with subtle warmth */
+    --bg-card: #1a1a1a;    /* Sophisticated charcoal for containers */
+    --bg-surface: #242424; /* Elevated surface color */
+    
+    /* Refined Gold Palette - More Authentic & Expensive */
+    --gold-primary: #c9a961; /* Champagne gold - sophisticated and muted */
+    --gold-accent: #e6d16a; /* Warm gold for highlights */
+    --gold-deep: #a08749; /* Deep antique gold for depth */
+    --gold-light: #f4e99b; /* Light gold for subtle accents */
+    --gold-metallic: #d4af37; /* Classic metallic gold for special elements */
+    
+    /* Hover and Interactive States */
+    --gold-hover: #b8963d; /* Rich hover state */
+    --gold-pressed: #9d7f31; /* Pressed/active state */
+    
+    /* Secondary Colors - Muted Bronze & Copper Tones */
+    --bronze-primary: #8b6914; /* Rich bronze for secondary actions */
+    --bronze-hover: #735513; /* Darker bronze for hover */
+    --copper-accent: #b87333; /* Warm copper for warnings/logout */
+    --copper-hover: #9d5f2a; /* Darker copper hover */
+    
+    /* Text Colors - Refined Hierarchy */
+    --text-primary: #f5f5f5; /* Pure white for primary text */
+    --text-secondary: #d1d1d1; /* Warm light grey for secondary text */
+    --text-muted: #999999; /* Medium grey for muted text */
+    --text-gold: #e6d16a; /* Gold text for headings */
+    --text-gold-bright: #f4e99b; /* Brighter gold for emphasis */
+    
+    /* Border & Surface Colors */
+    --border-subtle: #333333; /* Refined dark border */
+    --border-gold: rgba(201, 169, 97, 0.3); /* Subtle gold border */
+    --border-gold-strong: rgba(201, 169, 97, 0.6); /* Stronger gold border */
+    
+    /* Shadows - More Sophisticated */
+    --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-deep: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --shadow-gold: 0 0 20px rgba(201, 169, 97, 0.2);
+    --shadow-gold-strong: 0 0 30px rgba(201, 169, 97, 0.4);
+    
+    /* Confirmed/Disabled States */
+    --confirmed-bg: #2a2a2a;
+    --disabled-bg: #404040;
+    --disabled-text: #666666;
+    
+    /* Table Colors */
+    --table-header-bg: #1f1f1f;
+    --table-stripe: #1e1e1e;
+    
+    /* Premium Gradients */
+    --gradient-gold: linear-gradient(135deg, #c9a961 0%, #e6d16a 50%, #c9a961 100%);
+    --gradient-gold-subtle: linear-gradient(135deg, rgba(201, 169, 97, 0.1) 0%, rgba(230, 209, 106, 0.2) 100%);
+    --gradient-surface: linear-gradient(145deg, #1a1a1a 0%, #242424 100%);
+    --gradient-button: linear-gradient(135deg, #c9a961 0%, #d4af37 50%, #c9a961 100%);
+    --gradient-button-hover: linear-gradient(135deg, #b8963d 0%, #c9a961 50%, #b8963d 100%);
 }
 
 * {
@@ -31,238 +67,352 @@
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     line-height: 1.6;
-    color: var(--text-light); /* Light text on dark background */
-    background-color: var(--bg-primary); /* Deep black background */
+    color: var(--text-primary);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, #111111 100%);
     display: flex;
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    padding: 40px; /* Increased padding */
+    padding: 40px;
 }
 
 /* General Container Styles */
 .login-container, .dashboard-container {
-    background-color: var(--bg-card); /* Lighter black for containers */
-    padding: 40px; /* More padding */
-    border-radius: 15px; /* Softer rounded corners */
-    box-shadow: var(--shadow-deep); /* Deeper, richer shadow */
+    background: var(--gradient-surface);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-deep), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     width: 100%;
-    max-width: 600px; /* Wider for login */
-    margin-top: 80px; /* Push down more */
-    border: var(--glaze-border-gold); /* Subtle gold border for glaze effect */
+    max-width: 600px;
+    margin-top: 80px;
+    border: 1px solid var(--border-gold);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before, .dashboard-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gradient-gold);
+    opacity: 0.6;
 }
 
 .dashboard-container {
-    max-width: 1400px; /* Wider for dashboard */
+    max-width: 1400px;
     margin-top: 40px;
 }
 
-
 /* Headings */
 h1, h2, h3 {
-    color: var(--text-heading); /* Brighter gold headings */
-    margin-bottom: 30px; /* More space */
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 30px;
     text-align: center;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); /* Glowing text shadow for premium look */
     font-weight: 700;
+    position: relative;
 }
-h2 { font-size: 2.2em; } /* Larger headings */
+
+h1::after, h2::after, h3::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: var(--gradient-gold);
+    border-radius: 1px;
+}
+
+h2 { font-size: 2.2em; }
 h3 { font-size: 1.9em; }
 
 p {
     text-align: justify;
     padding: 10px 0px 10px 0px;
+    color: var(--text-secondary);
 }
 
 /* Input Fields & Buttons */
 .input-group {
-    margin-bottom: 25px; /* More space */
+    margin-bottom: 25px;
 }
 
 .input-group label {
     display: block;
-    margin-bottom: 10px; /* More space */
+    margin-bottom: 10px;
     font-weight: 600;
-    color: var(--text-light);
+    color: var(--text-secondary);
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 input[type="text"],
 input[type="password"] {
     width: 100%;
-    padding: 14px 18px; /* Larger padding */
-    border: 1px solid var(--border-subtle); /* Darker border */
-    border-radius: 10px; /* More rounded */
+    padding: 16px 20px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
     font-size: 1.1em;
-    background-color: rgba(255, 255, 255, 0.08); /* Slightly transparent white for a subtle glaze */
-    color: var(--text-light);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
 }
 
 input[type="text"]::placeholder,
 input[type="password"]::placeholder {
-    color: rgba(224, 224, 224, 0.5); /* Lighter, subtle placeholder */
+    color: var(--text-muted);
+    font-style: italic;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
     outline: none;
-    border-color: var(--primary-accent); /* Gold border on focus */
-    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.4), var(--glaze-shadow-gold); /* Double shadow for glaze effect */
-    background-color: rgba(255, 255, 255, 0.15); /* More transparent white on focus */
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.2), var(--shadow-gold);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
 }
 
 button {
     display: inline-block;
-    padding: 15px 30px; /* Larger buttons */
+    padding: 16px 32px;
     border: none;
-    border-radius: 10px; /* More rounded */
-    font-size: 1.1em;
+    border-radius: 12px;
+    font-size: 1.05em;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, border 0.3s ease; /* Ensure all transitions are smooth */
-    color: var(--bg-card); /* Dark text on gold buttons */
-    font-weight: 700;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); /* Button shadow */
-    background: var(--primary-accent); /* Default gold background */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+button:hover::before {
+    left: 100%;
 }
 
 /* Specific Button Styles */
 button[type="submit"], .btn-primary {
-    background: var(--glaze-gradient-gold); /* Gold gradient for premium look */
-    border: var(--glaze-border-gold);
-    color: var(--bg-card); /* Dark text on gold */
+    background: var(--gradient-button);
+    color: var(--bg-primary);
+    box-shadow: var(--shadow-medium), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-gold-strong);
 }
 
 button[type="submit"]:hover, .btn-primary:hover {
-    background: var(--primary-accent-hover); /* Darker gold on hover */
-    transform: translateY(-3px); /* More pronounced lift effect */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), var(--glaze-shadow-gold); /* Enhanced shadow with gold glow */
-    border: var(--glaze-border-gold);
+    background: var(--gradient-button-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-deep), var(--shadow-gold-strong), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+button[type="submit"]:active, .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-subtle), inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .btn-logout {
-    background-color: var(--secondary-accent); /* Muted gold logout button */
+    background: linear-gradient(135deg, var(--copper-accent), #cd7f32);
+    color: var(--text-primary);
     float: right;
-    margin-top: -60px; /* Adjusted position */
-    color: var(--text-light); /* Light text on muted gold */
+    margin-top: -60px;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid rgba(184, 115, 51, 0.4);
 }
 
 .btn-logout:hover {
-    background-color: var(--secondary-accent-hover); /* Darker muted gold on hover */
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(135deg, var(--copper-hover), var(--copper-accent));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-deep), 0 0 20px rgba(184, 115, 51, 0.3);
 }
 
 /* Confirmation Button in Table */
 .btn-confirm {
-    background-color: var(--primary-accent); /* Gold confirm button */
-    padding: 12px 20px; /* Adjusted padding */
-    font-size: 1em;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-    color: var(--bg-card); /* Dark text on gold */
+    background: var(--gradient-button);
+    color: var(--bg-primary);
+    padding: 12px 24px;
+    font-size: 0.95em;
+    box-shadow: var(--shadow-subtle);
+    border: 1px solid var(--border-gold);
 }
+
 .btn-confirm:hover {
-    background-color: var(--primary-accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+    background: var(--gradient-button-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-medium), var(--shadow-gold);
 }
 
 /* Confirmed Button (disabled) */
 .btn-disabled {
-    background-color: var(--disabled-btn-bg); /* Darker grey disabled button */
+    background: var(--disabled-bg);
     cursor: not-allowed;
-    opacity: 0.6; /* Slightly more opaque */
-    padding: 12px 20px;
-    font-size: 1em;
-    box-shadow: none; /* No shadow for disabled */
-    color: rgba(224, 224, 224, 0.6); /* Dimmed light text */
-}
-.btn-disabled:hover {
-    background-color: var(--disabled-btn-bg); /* No hover effect for disabled */
-    transform: none; /* No lift for disabled */
+    opacity: 0.5;
+    padding: 12px 24px;
+    font-size: 0.95em;
+    box-shadow: none;
+    color: var(--disabled-text);
+    border: 1px solid #555;
 }
 
-/* Messages (for login/modal) */
+.btn-disabled:hover {
+    background: var(--disabled-bg);
+    transform: none;
+}
+
+.btn-disabled::before {
+    display: none;
+}
+
+/* Messages */
 .message {
     text-align: center;
     margin-top: 25px;
-    font-weight: bold;
-    color: var(--secondary-accent); /* Muted gold for error messages */
-    text-shadow: 0 0 8px rgba(155, 135, 12, 0.5); /* Subtle glow for messages */
+    font-weight: 600;
     font-size: 1.05em;
-}
-/* For success messages */
-.message.success {
-    color: var(--primary-accent); /* Gold for success messages */
-    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+    display: none; /* Hide by default */
 }
 
+.message:not(:empty) {
+    display: block;
+    color: var(--copper-accent);
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(184, 115, 51, 0.1);
+    border: 1px solid rgba(184, 115, 51, 0.3);
+}
+
+.message.success:not(:empty) {
+    color: var(--gold-accent);
+    background: rgba(201, 169, 97, 0.1);
+    border: 1px solid rgba(201, 169, 97, 0.3);
+}
 
 /* Dashboard Header */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 40px; /* More space */
+    margin-bottom: 40px;
     flex-wrap: wrap;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-subtle); /* Separator */
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    position: relative;
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--gradient-gold);
+    opacity: 0.3;
 }
 
 header h1 {
     margin-bottom: 0;
     text-align: left;
     flex-grow: 1;
-    font-size: 2.5em; /* Larger dashboard heading */
-    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    font-size: 2.5em;
+}
+
+header h1::after {
+    display: none;
 }
 
 header p {
-    margin-right: 30px; /* More space */
+    margin-right: 30px;
     font-size: 1.2em;
-    color: var(--text-light);
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
 /* Search Section */
 .search-section {
     display: flex;
-    gap: 20px; /* More space between input and button */
+    gap: 20px;
     margin-bottom: 35px;
 }
 
 .search-section button {
-    padding: 14px 28px; /* Match input height */
+    padding: 16px 32px;
 }
 
 /* Table Styles */
 .table-container {
     overflow-x: auto;
-    border: 1px solid var(--border-subtle); /* Darker border */
-    border-radius: 12px; /* More rounded */
-    box-shadow: var(--shadow-deep); /* Deeper shadow */
-    background-color: rgba(0, 0, 0, 0.15); /* More transparent background for table for glaze */
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    box-shadow: var(--shadow-deep);
+    background: var(--gradient-surface);
+    position: relative;
+}
+
+.table-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gradient-gold);
+    opacity: 0.4;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 800px; /* Ensure table doesn't get too squished */
+    min-width: 800px;
 }
 
 th, td {
-    padding: 18px 25px; /* More padding */
+    padding: 20px 25px;
     text-align: left;
-    border-bottom: 1px solid var(--border-subtle); /* Darker border */
-    color: var(--text-light);
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
 }
 
 thead th {
-    background-color: var(--table-header-bg); /* Very dark header background */
-    color: var(--text-heading); /* Brighter gold text in headers */
+    background: linear-gradient(135deg, var(--table-header-bg) 0%, #252525 100%);
+    color: var(--text-gold);
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.95em;
-    letter-spacing: 0.08em; /* More letter spacing */
+    font-size: 0.9em;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+thead th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gradient-gold);
+    opacity: 0.5;
 }
 
 tbody tr:last-child td {
@@ -270,22 +420,27 @@ tbody tr:last-child td {
 }
 
 tbody tr:nth-child(even) {
-    background-color: var(--table-stripe); /* Darker zebra striping */
+    background: rgba(255, 255, 255, 0.02);
+}
+
+tbody tr:hover {
+    background: rgba(201, 169, 97, 0.05);
+    transform: translateY(-1px);
+    transition: all 0.3s ease;
 }
 
 /* UI States */
-/* Darker grey rows + disabled buttons for confirmed */
 .row-confirmed {
-    background: var(--confirmed-bg); /* Darker grey for confirmed rows */
-    opacity: 0.7; /* Slightly more dim */
-    transition: background-color 0.3s ease, opacity 0.3s ease;
-    filter: grayscale(0.2); /* Subtle desaturation for confirmed */
+    background: var(--confirmed-bg);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    filter: grayscale(0.3);
 }
 
 .no-results {
     text-align: center;
-    padding: 40px; /* More padding */
-    color: var(--grey-medium); /* Still medium grey for subtle message */
+    padding: 60px 40px;
+    color: var(--text-muted);
     font-style: italic;
     font-size: 1.2em;
     font-weight: 300;
@@ -301,82 +456,104 @@ tbody tr:nth-child(even) {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.8); /* Much darker overlay */
+    background-color: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
     justify-content: center;
     align-items: center;
 }
 
 .modal-content {
-    background-color: var(--bg-card); /* Use card background */
+    background: var(--gradient-surface);
     margin: auto;
-    padding: 40px; /* More padding */
-    border: var(--glaze-border-gold); /* Gold border for modal glaze */
+    padding: 50px;
+    border: 1px solid var(--border-gold);
     width: 90%;
-    max-width: 500px; /* Slightly larger max width */
-    border-radius: 15px; /* More rounded */
-    box-shadow: var(--shadow-deep); /* Deeper shadow */
+    max-width: 520px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-deep), var(--shadow-gold);
     position: relative;
     text-align: center;
-    color: var(--text-light);
+    color: var(--text-primary);
+    backdrop-filter: blur(20px);
+}
+
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gradient-gold);
+    opacity: 0.6;
 }
 
 .close-button {
-    color: var(--grey-medium);
+    color: var(--text-muted);
     float: right;
-    font-size: 36px; /* Larger close button */
+    font-size: 32px;
     font-weight: bold;
     position: absolute;
-    top: 15px;
-    right: 25px; /* More inward */
-    transition: color 0.3s ease;
+    top: 20px;
+    right: 30px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
 }
 
 .close-button:hover,
 .close-button:focus {
-    color: var(--text-heading); /* Gold on hover */
-    text-decoration: none;
-    cursor: pointer;
+    color: var(--text-gold);
+    background: rgba(201, 169, 97, 0.1);
+    transform: rotate(90deg);
 }
 
 .modal-content h3 {
     margin-top: 0;
-    margin-bottom: 25px;
-    color: var(--text-heading);
+    margin-bottom: 30px;
     font-size: 2em;
 }
 
 .modal-content p {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     line-height: 1.6;
-    color: var(--text-light);
+    color: var(--text-secondary);
     font-size: 1.05em;
 }
 
 .modal-content strong {
-    color: var(--text-heading); /* Brighter gold strong text */
+    color: var(--text-gold-bright);
 }
 
 .btn-confirm-modal {
-    background: var(--glaze-gradient-gold); /* Gold gradient */
-    margin-right: 20px; /* More space */
-    color: var(--bg-card); /* Dark text */
+    background: var(--gradient-button);
+    margin-right: 20px;
+    color: var(--bg-primary);
+    border: 1px solid var(--border-gold-strong);
 }
+
 .btn-confirm-modal:hover {
-    background: var(--primary-accent-hover); /* Darker gold */
+    background: var(--gradient-button-hover);
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4), var(--glaze-shadow-gold);
+    box-shadow: var(--shadow-medium), var(--shadow-gold);
 }
 
 .btn-cancel-modal {
-    background-color: var(--secondary-accent); /* Muted gold cancel button */
-    color: var(--text-light); /* Light text */
-}
-.btn-cancel-modal:hover {
-    background-color: var(--secondary-accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, var(--bronze-primary), #a0702a);
+    color: var(--text-primary);
+    border: 1px solid rgba(139, 105, 20, 0.4);
 }
 
+.btn-cancel-modal:hover {
+    background: linear-gradient(135deg, var(--bronze-hover), var(--bronze-primary));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium), 0 0 20px rgba(139, 105, 20, 0.3);
+}
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -386,21 +563,25 @@ tbody tr:nth-child(even) {
     .dashboard-container, .login-container {
         padding: 25px;
         margin-top: 20px;
-        border-radius: 10px;
+        border-radius: 12px;
     }
 
     header {
         flex-direction: column;
         align-items: flex-start;
         margin-bottom: 20px;
-        border-bottom: none; /* Remove border on small screens */
+        border-bottom: none;
+    }
+
+    header::after {
+        display: none;
     }
 
     header h1 {
         text-align: center;
         width: 100%;
         margin-bottom: 10px;
-        font-size: 1.6em;
+        font-size: 1.8em;
     }
 
     header p {
@@ -426,15 +607,15 @@ tbody tr:nth-child(even) {
 
     .search-section button {
         width: 100%;
-        padding: 12px 20px;
+        padding: 14px 24px;
     }
 
     th, td {
         padding: 12px 15px;
-        font-size: 0.8em;
+        font-size: 0.85em;
     }
     table {
-        min-width: unset; /* Allow table to shrink on small screens */
+        min-width: unset;
     }
 }
 
@@ -444,27 +625,27 @@ tbody tr:nth-child(even) {
         margin-top: 15px;
     }
     h2 {
-        font-size: 1.4em;
+        font-size: 1.6em;
     }
     button {
-        padding: 10px 18px;
-        font-size: 0.9em;
+        padding: 12px 20px;
+        font-size: 0.95em;
     }
     .modal-content {
         width: 95%;
-        padding: 20px;
-        border-radius: 10px;
+        padding: 30px;
+        border-radius: 16px;
     }
     .close-button {
-        font-size: 30px;
-        right: 15px;
+        font-size: 28px;
+        right: 20px;
     }
     th, td {
-        font-size: 0.75em;
+        font-size: 0.8em;
         padding: 10px;
     }
     .no-results {
-        padding: 20px;
+        padding: 30px 20px;
         font-size: 1em;
     }
 }
